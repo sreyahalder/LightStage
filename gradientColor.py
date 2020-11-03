@@ -6,6 +6,7 @@ MODES = [
         ("Red", "red"),
         ("Green", "green"),
         ("Blue", "blue"),
+        ("Black", "black"),
     ]
 
 class GradientDialogue(tk.simpledialog.Dialog):
@@ -31,11 +32,11 @@ class GradientDialogue(tk.simpledialog.Dialog):
             b.grid(column=1,row=row, sticky=tk.W, padx=10)
             row += 1
 
-        tk.Label(master, text="Gradient Direction").grid(row=5)
+        tk.Label(master, text="Gradient Direction").grid(row=6)
         r1 = tk.Radiobutton(master, text="Horizontal", variable=self.y, value=True)
-        r1.grid(column=0, row=6 )
+        r1.grid(column=0, row=7 )
         r1 = tk.Radiobutton(master, text="Vertical", variable=self.y, value=False)
-        r1.grid(column=1, row=6)
+        r1.grid(column=1, row=7)
 
         self.selection1 = None
         self.selection2 = None

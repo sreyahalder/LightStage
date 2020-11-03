@@ -185,17 +185,11 @@ class LightStage:
 
     # Run sequence
     def sequence(self):
-        self.sequence_rows = simpledialog.askinteger("Input", "Sequence rows? (0 - 100)",
-                                                        parent=self.window, minvalue=0, maxvalue=100)
-        if self.sequence_rows is None: return
-        self.sequence_columns = simpledialog.askinteger("Input", "Sequence columns? (0 - 100)",
-                                                     parent=self.window, minvalue=0, maxvalue=100)
-        if self.sequence_columns is None: return
-        self.sequence_time = simpledialog.askinteger("Input", "Sequence time? (ms)",
-                                                        parent=self.window, minvalue=0)
-        if self.sequence_time is None: return
-        color = simpleColors.MyDialog(self.window).selection
-        if color is None: return
+        sequence = simpleColors.MyDialog(self.window)
+        self.sequence_rows, self.sequence_columns, self.sequence_time, color =\
+            int(sequence.rows), int(sequence.cols), int(sequence.time), sequence.color
+        if color is None or self.sequence_rows is None or self.sequence_columns is None or self.sequence_time is None:
+            return
         time = 0
         y = 0
         width = self.window.winfo_screenwidth() / self.sequence_columns
