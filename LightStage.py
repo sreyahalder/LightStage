@@ -3,11 +3,9 @@ import tkinter as tk
 import tkinter.colorchooser
 from tkinter.filedialog import askopenfile
 from execute_config import parse_config
-from tkinter import simpledialog
 import simpleColors
 import gradientColor
 from createGradient import create_gradient
-import sequenceRect
 
 cam = cv2.VideoCapture(0)
 
@@ -186,17 +184,13 @@ class LightStage:
     # Run sequence
     def sequence(self):
         sequence = simpleColors.MyDialog(self.window)
+        if not sequence.cont: return
         self.sequence_rows, self.sequence_columns, self.sequence_time, color =\
             int(sequence.rows), int(sequence.cols), int(sequence.time), sequence.color
-        if color is None or self.sequence_rows is None or self.sequence_columns is None or self.sequence_time is None:
-            return
         time = 0
         y = 0
-        width = self.window.winfo_screenwidth() / self.sequence_columns
-        height = self.window.winfo_screenheight() / self.sequence_rows
-
-        cont = sequenceRect.MyDialog(self.window, width, height, color).cont
-        if not cont: return
+        width = sequence.w
+        height = sequence.h
 
         for i in range(self.sequence_rows):
             x = 0

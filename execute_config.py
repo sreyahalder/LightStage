@@ -20,6 +20,14 @@ def set_param(param, root):
     color = '#' + ''.join([random.choice('0123456789ABCDEF') for j in range(6)]) if param[4] == 'rand' else param[4]
     return w, h, x, y, color
 
+def create_shape(canvas, type, w, h, x, y, color, param):
+    if type == 'r':
+        shape = canvas.create_rectangle(w, h, x, y, fill=color, tags="R")
+    elif type == 'c':
+        shape = canvas.create_oval(w, h, x, y, fill=color, tags="C")
+    if len(param) > 6:
+        canvas.after(int(param[6]), delete, shape, canvas)
+
 def parse_config(config, canvas, root):
     lines = config.splitlines()
     for line in lines:
@@ -28,17 +36,18 @@ def parse_config(config, canvas, root):
         if type == "g":
             color1, color2 = param[0], param[1]
             horizontal = True if param[2].lower() == "h" else False
-            if len(param) > 3: canvas.after(param[3], create_gradient, root, canvas, horizontal, color1, color2)
-            else:
+            if len(param) == 3:
                 create_gradient(root, canvas, horizontal, color1, color2)
+            elif len(param) == 4:
+                canvas.after(param[3], create_gradient, root, canvas, horizontal, color1, color2)
+            elif len(param) == 5:
+                canvas.after(param[3], create_gradient, root, canvas, horizontal, color1, color2)
+                canvas.after(int(param[3]) + int(param[4]), delete, "gradient", canvas)
             continue
 
         w, h, x, y, color = set_param(param, root)
-        if type == 'r':
-            shape = canvas.create_rectangle(w, h, x, y, fill=color, tags="R")
-        elif type == 'c':
-            shape = canvas.create_oval(w, h, x, y, fill=color, tags="C")
 
-        if len(param) > 5:
-            print("Timed object")
-            canvas.after(param[5], delete, shape, canvas)
+        if len(param) == 5:
+            create_shape(canvas, type, w, h, x, y, color, param)
+        elif len(param) > 5:
+            canvas.after(param[5], create_shape, canvas, type, w, h, x, y, color, param)

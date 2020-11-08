@@ -1,5 +1,4 @@
 def create_gradient(window, canvas, horizontal, color1, color2):
-    canvas.delete("all")
     width = window.winfo_width()
     height = window.winfo_height()
     limit = width if horizontal else height
