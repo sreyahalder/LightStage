@@ -21,14 +21,30 @@ def set_param(param, root):
     return w, h, x, y, color
 
 def create_shape(canvas, type, w, h, x, y, color, param):
+    """
+    Draws shapes according to config file
+    """
     if type == 'r':
-        shape = canvas.create_rectangle(w, h, x, y, fill=color, tags="R")
+        shape = canvas.create_rectangle(w, h, x, y, fill=color, tags="R", outline="")
     elif type == 'c':
-        shape = canvas.create_oval(w, h, x, y, fill=color, tags="C")
+        shape = canvas.create_oval(w, h, x, y, fill=color, tags="C", outline="")
     if len(param) > 6:
-        canvas.after(int(param[6]), delete, shape, canvas)
+        canvas.after(param[6], delete, shape, canvas)
 
 def parse_config(config, canvas, root):
+    """
+    Config File Format:
+        For shapes:
+            [Shape] [X_start] [Y_start] [X_end] [Y_end] [Color] [Start_time] [End_time]
+            Shape: R for rectangle, C for circle
+            X_start, Y_start, X_end, Y_end: starting and ending coordinates
+            Color: Color of shape
+            Start_time, End_time: (Optional) If no end time specified, then shape will not be deleted
+        For gradients:
+            G [color1] [color2] [Orientation] [Start_time] [End_time]
+            color1, color2: 2 colors for gradient
+            Start_time, End_time: (Optional) If no end time specified, then shape will not be deleted
+    """
     lines = config.splitlines()
     for line in lines:
         type = line[0].lower()
@@ -42,7 +58,7 @@ def parse_config(config, canvas, root):
                 canvas.after(param[3], create_gradient, root, canvas, horizontal, color1, color2)
             elif len(param) == 5:
                 canvas.after(param[3], create_gradient, root, canvas, horizontal, color1, color2)
-                canvas.after(int(param[3]) + int(param[4]), delete, "gradient", canvas)
+                canvas.after(param[4], delete, "gradient", canvas)
             continue
 
         w, h, x, y, color = set_param(param, root)

@@ -44,25 +44,27 @@ class MyDialog(tk.simpledialog.Dialog):
         self.mySubmitButton = tk.Button(master, text='Update Rectangle', command=self.update)
         self.mySubmitButton.pack(pady=5)
 
-        self.canv = tk.Canvas(master, highlightthickness=0, height=self.h + 5, width=self.w + 5)
+        self.canv = tk.Canvas(master, highlightthickness=0, height=self.h + 5, width=self.w + 5, bg="black")
         self.canv.pack()
         self.rect = self.canv.create_rectangle(5, 5, self.w, self.h, fill="white", tags="R")
 
         self.cont = False
 
-
+    # Return values
     def apply(self, *args):
         self.color = self.v.get()
         self.rows = self.e1.get()
         self.cols = self.e2.get()
         self.time = self.e3.get()
-        self.w = self.parent.winfo_screenwidth() / int(self.rows)
-        self.h = self.parent.winfo_screenheight() / int(self.cols)
+        self.w = self.parent.winfo_screenwidth() / int(self.e2.get())
+        self.h = self.parent.winfo_screenheight() / int(self.e1.get())
         self.cont = True
 
+    # Update rectangle in preview
     def update(self):
         self.w = self.parent.winfo_screenwidth() / int(self.e2.get())
         self.h = self.parent.winfo_screenheight() / int(self.e1.get())
         self.color = self.v.get()
         self.canv.itemconfig(self.rect, fill=self.color)
         self.canv.coords(self.rect, 5, 5, self.w, self.h)
+        print("x: ", 0, " y: ", 0, " w: ", self.w, " h:", self.h)

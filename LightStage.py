@@ -2,8 +2,8 @@ import cv2
 import tkinter as tk
 import tkinter.colorchooser
 from tkinter.filedialog import askopenfile
-from execute_config import parse_config
-import simpleColors
+from executeConfig import parse_config
+import sequencePopup
 import gradientColor
 from createGradient import create_gradient
 
@@ -51,9 +51,9 @@ class LightStage:
         self.m2.add_command(label="Snapshot", command=self.snapshot)
 
         # Sequence options
-        self.sequence_time = 50
-        self.sequence_rows = 4
-        self.sequence_columns = 4
+        self.seq_time = 50
+        self.seq_rows = 4
+        self.seq_columns = 4
         self.img_count = 0
 
         # Gradient
@@ -89,8 +89,8 @@ class LightStage:
         self.start_x = event.x
         self.start_y = event.y
 
-        if self.shape == "R": self.rect = self.canvas.create_rectangle(self.x, self.y, 1, 1, fill="white", tags="R")
-        else: self.rect = self.canvas.create_oval(self.x, self.y, 1, 1, fill="white", tags="C")
+        if self.shape == "R": self.rect = self.canvas.create_rectangle(self.x, self.y, 1, 1, fill="white", tags="R", outline="")
+        else: self.rect = self.canvas.create_oval(self.x, self.y, 1, 1, fill="white", tags="C", outline="")
 
     # Draw rectangle on mouse drag
     def on_mouse_drag(self, event):
@@ -154,9 +154,10 @@ class LightStage:
 
     # Create rectangles for sequence
     def create_rect(self, x, y, w, h, color):
-        rect = self.canvas.create_rectangle(x, y, w, h, fill=color, tags="R")
-        self.canvas.after(self.sequence_time//2, self.snapshot)
-        self.canvas.after(self.sequence_time, self.delete, rect)
+        self.canvas.delete("all")
+        rect = self.canvas.create_rectangle(x, y, w, h, fill=color, tags="R", outline="")
+        self.canvas.after(self.seq_time//2, self.snapshot)
+        self.canvas.after(self.seq_time, self.delete, rect)
 
     # Take snapshot
     def snapshot(self):
@@ -164,7 +165,6 @@ class LightStage:
         img_name = "/Users/halde/Documents/test_snapshots/{:04d}.png".format(self.img_count)
         ret, frame = cam.read()
         cv2.imwrite(img_name, frame)
-        # print("{} written!".format(img_name))
 
         # Replace with your directory
         config = open("/Users/halde/Documents/test_snapshots/{:04d}.txt".format(self.img_count), "w")
@@ -183,20 +183,19 @@ class LightStage:
 
     # Run sequence
     def sequence(self):
-        sequence = simpleColors.MyDialog(self.window)
-        if not sequence.cont: return
-        self.sequence_rows, self.sequence_columns, self.sequence_time, color =\
-            int(sequence.rows), int(sequence.cols), int(sequence.time), sequence.color
+        seq = sequencePopup.MyDialog(self.window)
+        if not seq.cont: return
+        self.seq_rows, self.seq_cols, self.seq_time, color = int(seq.rows), int(seq.cols), int(seq.time), seq.color
+        width = seq.w
+        height = seq.h
         time = 0
         y = 0
-        width = sequence.w
-        height = sequence.h
 
-        for i in range(self.sequence_rows):
+        for i in range(self.seq_rows):
             x = 0
-            for j in range(self.sequence_columns):
+            for j in range(self.seq_cols):
                 self.canvas.after(time, self.create_rect, x, y, x + width, y + height, color)
-                time += self.sequence_time
+                time += self.seq_time
                 x += width
             y += height
 
